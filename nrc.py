@@ -28,21 +28,25 @@ def get_export_template(component_file: str) -> str:
 
 def get_component_template(component_name: str) -> str:
     return f"""
-import React, {{ useState, useEffect }} from 'react';
+import React, {{ useEffect, useState }} from 'react';
 import {{ Box }} from '@drivekyte/web-components';
 
-const {component_name} = () => {{
-    const[loading, setLoading] = useState(false);
+type {component_name}Props = {{
+  isLoading: boolean;
+}};
 
-    useEffect(() => {{
-        setLoading(false);
-    }}, [loading]);
+const {component_name} = ({{ isLoading }}: {component_name}Props) => {{
+  const [loading, setLoading] = useState(false);
 
-    return (
-        <Box>
-            <div>{component_name}</div>
-        </Box>
-    )
+  useEffect(() => {{
+    setLoading(isLoading);
+  }}, [loading]);
+
+  return (
+    <Box>
+      <div>{component_name}</div>
+    </Box>
+  );
 }};
 
 export default {component_name};"""
