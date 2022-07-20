@@ -2,6 +2,7 @@
 import sys
 import os
 import json
+from typing import List
 
 
 def create_file(path: str, content: str) -> None:
@@ -26,20 +27,32 @@ def get_export_template(component_file: str) -> str:
     return f"export {{ default }} from './{component_file}';"
 
 
-def get_component_template(component_name: str) -> str:
+def get_component_template(component_name: str, properties: List[str]) -> str:
+    prop_types = ""
+    prop_values = ""
+    pos = -1
+    lb = ""
+    for p in properties:
+        pos += 1
+        lb = "\n" if pos != len(properties) - 1 else ""
+        prop_types += f"  {p}: string;{lb}"
+        prop_values += f"{p}, "
+
     return f"""
 import React, {{ useEffect, useState }} from 'react';
 import {{ Box }} from '@drivekyte/web-components';
 
 type {component_name}Props = {{
-  isLoading: boolean;
+{prop_types}
 }};
 
-const {component_name} = ({{ isLoading }}: {component_name}Props) => {{
+const {component_name} = ({{ {prop_values} }}: {component_name}Props) => {{
   const [loading, setLoading] = useState(false);
 
+  console.log('This props', {prop_values if prop_values else '"None"'});
+
   useEffect(() => {{
-    setLoading(isLoading);
+    setLoading(!loading);
   }}, [loading]);
 
   return (
@@ -52,7 +65,7 @@ const {component_name} = ({{ isLoading }}: {component_name}Props) => {{
 export default {component_name};"""
 
 
-def main(full_path: str) -> None:
+def main(full_path: str, properties: List[str]) -> None:
     file_name = full_path.split('/')[-1]
     assets = {
         "export-file": "index",
@@ -71,7 +84,7 @@ def main(full_path: str) -> None:
 
     create_file(
         f'{full_path}/{assets["file"]}.tsx',
-        get_component_template(assets['name']))
+        get_component_template(assets['name'], properties))
 
 
 if __name__ == "__main__":
@@ -83,4 +96,6 @@ if __name__ == "__main__":
         print('> Example:\nnrc welcome-page\n')
         exit(-1)
 
-    main(sys.argv[1])
+    properties = sys.argv[2::] if len(sys.argv) > 2 else []
+
+    main(sys.argv[1], properties)
