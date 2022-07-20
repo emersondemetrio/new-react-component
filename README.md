@@ -10,6 +10,10 @@ echo "alias nrc='path/to/nrc.py'" >> path/to/my/rc-profile # .zshrc, .bashrc, et
 # later on
 
 nrc path/to/my-awesome-component # MyAwesomeComponent
+
+# or
+
+nrc path/to/my-awesome-component prop1 prop2
 ```
 
 ## Results
@@ -22,8 +26,14 @@ export { default } from './my-awesome-component';
 import React, { useState, useEffect } from 'react';
 import { Box } from '@drivekyte/web-components';
 
-const MyAwesomeComponent = () => {
+type MyAwesomeComponentProps = {
+	// props
+};
+
+const MyAwesomeComponent = ({ /* props */ }:  MyAwesomeComponentProps) => {
 	const [loading, setLoading] = useState(false);
+
+	console.log('This props' /* props */);
 
 	useEffect(() => {
 		setLoading(false);
